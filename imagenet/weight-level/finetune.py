@@ -144,7 +144,7 @@ def main():
         print("=> creating model '{}'".format(args.arch))
         model = models.__dict__[args.arch]()
         num_ftrs = model.classifier[6].in_features
-        model.classifier[6] = nn.Linear(num_ftrs, 2) #only train the last layer
+        model.classifier[6] = nn.Linear(num_ftrs, 102) #only train the last layer
 
     if args.gpu is not None:
         model = model.cuda(args.gpu)
