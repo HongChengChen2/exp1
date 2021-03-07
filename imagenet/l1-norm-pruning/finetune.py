@@ -17,6 +17,9 @@ import torchvision.datasets as datasets
 import torchvision.models as models
 
 from resnet import resnet34
+from torch.autograd import Variable
+from torch.utils.data import Dataset, DataLoader
+from PIL import Image
 
 
 model_names = sorted(name for name in models.__dict__
@@ -161,6 +164,7 @@ def main():
 
     history_score = np.zeros((args.epochs + 1, 1))
     np.savetxt(os.path.join(args.save, 'record.txt'), history_score, fmt = '%10.5f', delimiter=',')
+    
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
