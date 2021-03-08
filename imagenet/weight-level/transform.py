@@ -172,7 +172,7 @@ def main():
 
 
     criterion = nn.CrossEntropyLoss().cuda(args.gpu)
-    test_acc0 = validate(test_loader, model, criterion)    
+    test_acc0 = validate(val_loader, model, criterion)    
 
     #############################################################################################################################
     for param in model.parameters(): #params have requires_grad=True by default
@@ -210,7 +210,7 @@ def main():
     model.train(False)
 
     print("--- test -----")
-    test_acc1 = validate(test_loader, model, criterion)    
+    test_acc1 = validate(val_loader, model, criterion)    
     ##############################################################################################################################
 
     save_checkpoint({
