@@ -10,7 +10,7 @@ import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
-import torch.optim
+import torch.optim as optim
 import torch.utils.data
 import torch.utils.data.distributed
 import torchvision.transforms as transforms
