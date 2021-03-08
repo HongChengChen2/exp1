@@ -17,6 +17,9 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
 
+from torch.autograd import Variable
+from torch.utils.data import Dataset, DataLoader
+from PIL import Image
 
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
@@ -79,7 +82,7 @@ transform = transforms.Compose([
 def default_loader(path):
     return Image.open(path).convert('RGB')
 
-class MyDataset(Dataset):
+class MyDataset(torch.utils.data.Dataset):
     def __init__(self, txt, transform=None, target_transform=None, loader=default_loader):
         fh = open(txt, 'r')
         imgs = []
@@ -103,7 +106,7 @@ class MyDataset(Dataset):
 
     def __len__(self):
         return len(self.imgs)
-        
+
 def main():
     global args, best_prec1
     args = parser.parse_args()
