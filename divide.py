@@ -1,7 +1,7 @@
 import os
 
 
-datasetpath=""
+datasetpath="/root/hcc/exp1/data/101/"
 
 d=os.listdir(datasetpath)
 d.sort()
