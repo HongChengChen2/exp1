@@ -66,7 +66,15 @@ parser.add_argument('--percent',default=0.1,type=float)
 parser.add_argument('--save',default='',type=str)
 
 best_prec1 = 0
+mean = [ 0.485, 0.456, 0.406 ]
+std = [ 0.229, 0.224, 0.225 ]
 
+transform = transforms.Compose([
+    transforms.Scale(256),
+    transforms.CenterCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize(mean = mean, std = std),
+    ])
 
 def main():
     global args, best_prec1
@@ -122,19 +130,12 @@ def main():
         else:
             model = torch.nn.DataParallel(model).cuda()
 
-    valdir = os.path.join(args.data, 'val')
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
 
-    val_loader = torch.utils.data.DataLoader(
-        datasets.ImageFolder(valdir, transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            normalize,
-        ])),
-        batch_size=args.batch_size, shuffle=False,
+    val_dataset = MyDataset(txt=args.data+'dataset-val.txt', transform=transform)
+    val_loader = torch.utils.data.DataLoader(val_dataset , batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
+
+
     criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 
     test_acc0 = validate(val_loader, model, criterion)
