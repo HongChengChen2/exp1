@@ -207,9 +207,12 @@ def main():
             optimizer.step()
             print('loss:',loss,loss.item())
 
+        if epoch % args.print_freq == 0:
+            validate(val_loader, model, criterion)
+
     model.train(False)
 
-    print("--- test -----")
+    print("--- final test -----")
     test_acc1 = validate(val_loader, model, criterion)    
     ##############################################################################################################################
 
