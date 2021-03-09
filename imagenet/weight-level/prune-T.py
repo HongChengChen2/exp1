@@ -10,7 +10,7 @@ import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
-import torch.optim as optim
+import torch.optim
 import torch.utils.data
 import torch.utils.data.distributed
 import torchvision.transforms as transforms
@@ -172,46 +172,42 @@ def main():
 
 
     criterion = nn.CrossEntropyLoss().cuda(args.gpu)
-    test_acc0 = validate(val_loader, model, criterion)    
 
+    test_acc0 = validate(val_loader, model, criterion)
     #############################################################################################################################
-    for param in model.parameters(): #params have requires_grad=True by default
-        param.requires_grad = False #only train the last layer:fc layer
-        param.cuda(args.gpu)
-    
+    total = 0
+    for m in model.modules():
+        if isinstance(m, nn.Conv2d):
+            total += m.weight.data.numel()
 
-    num_ftrs = model.classifier[6].in_features
-    model.classifier[6] = nn.Linear(num_ftrs, 102) #only train the last layer
-    
-    optimizer = optim.Adam(model.parameters(),lr=0.001)
+    conv_weights = torch.zeros(total).cuda()
+    index = 0
+    for m in model.modules():
+        if isinstance(m, nn.Conv2d):
+            size = m.weight.data.numel()
+            conv_weights[index:(index+size)] = m.weight.data.view(-1).abs().clone()
+            index += size
 
-    model.train(True)
-    model.cuda(args.gpu)
-    for epoch in range(args.start_epoch , args.epochs):
-        print("===epoc===%d"%epoch)
+    y, i = torch.sort(conv_weights)
+    thre_index = int(total * args.percent)
+    thre = y[thre_index]
 
-        for i,(data,y) in enumerate(train_loader):
-            data=Variable(data,requires_grad=True)
-            #y=Variable(y,requires_grad=True)
-
-            if args.gpu is not None:
-                data = data.cuda(args.gpu, non_blocking=True)
-            y = y.cuda(args.gpu, non_blocking=True)
-
-            out = model(data)
-
-            #print(out)
-            loss=criterion(out,y)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            print('loss:',loss,loss.item())
-
-    model.train(False)
-
-    print("--- test -----")
-    test_acc1 = validate(val_loader, model, criterion)    
+    pruned = 0
+    print('Pruning threshold: {}'.format(thre))
+    zero_flag = False
+    for k, m in enumerate(model.modules()):
+        if isinstance(m, nn.Conv2d):
+            weight_copy = m.weight.data.abs().clone()
+            mask = weight_copy.gt(thre).float().cuda()
+            pruned = pruned + mask.numel() - torch.sum(mask)
+            m.weight.data.mul_(mask)
+            if int(torch.sum(mask)) == 0:
+                zero_flag = True
+            print('layer index: {:d} \t total params: {:d} \t remaining params: {:d}'.
+                format(k, mask.numel(), int(torch.sum(mask))))
+    print('Total conv params: {}, Pruned conv params: {}, Pruned ratio: {}'.format(total, pruned, pruned/total))
     ##############################################################################################################################
+    test_acc1 = validate(val_loader, model, criterion)
 
     save_checkpoint({
             'epoch': 0,
@@ -220,7 +216,13 @@ def main():
             'best_acc': 0.,
         }, False, checkpoint=args.save)
 
-   
+    with open(os.path.join(args.save, 'prune.txt'), 'w') as f:
+        f.write('Before pruning: Test Acc:  %.2f\n' % (test_acc0))
+        f.write('Total conv params: {}, Pruned conv params: {}, Pruned ratio: {}\n'.format(total, pruned, pruned/total))
+        f.write('After Pruning: Test Acc:  %.2f\n' % (test_acc1))
+
+        if zero_flag:
+            f.write("There exists a layer with 0 parameters left.")
     return
 
 def validate(val_loader, model, criterion):
@@ -267,7 +269,7 @@ def validate(val_loader, model, criterion):
 
     return top1.avg
 
-def save_checkpoint(state, is_best, checkpoint, filename='transformed_vgg.pth.tar'):
+def save_checkpoint(state, is_best, checkpoint, filename='pruned.pth.tar'):
     filepath = os.path.join(checkpoint, filename)
     torch.save(state, filepath)
 
