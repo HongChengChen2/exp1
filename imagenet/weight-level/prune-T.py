@@ -16,6 +16,8 @@ import torch.utils.data.distributed
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
+from collections import OrderedDict
+
 
 from torch.autograd import Variable
 from torch.utils.data import Dataset, DataLoader
@@ -150,7 +152,13 @@ def main():
             print("=> loading checkpoint '{}'".format(args.resume))
             checkpoint = torch.load(args.resume).get('state_dict')
             #print(checkpoint.keys())  
-            model.load_state_dict(checkpoint)
+            new_checkpoint = OrderedDict()
+
+            for k, v in checkpoint.items():
+                name = k.replace(".module", "") # removing ‘.moldule’ from key
+                new_checkpoint[name]=v
+
+            model.load_state_dict(new_checkpoint)
 
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
