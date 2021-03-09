@@ -68,6 +68,7 @@ parser.add_argument('--seed', default=None, type=int,
 parser.add_argument('--gpu', default=None, type=int,
                     help='GPU id to use.')
 parser.add_argument('--percent',default=0.1,type=float)
+parser.add_argument('--savename',default=0.1,type=float)
 parser.add_argument('--save',default='',type=str)
 
 best_prec1 = 0
@@ -287,7 +288,7 @@ def validate(val_loader, model, criterion):
     return top1.avg
 
 def save_checkpoint(state, is_best, checkpoint, filename=''):
-    filename = "pruned_vgg"+ str(int(args.percent*100)) +".pth.tar"
+    filename = "pruned_vgg"+ str(int(args.savename*100)) +".pth.tar"
     filepath = os.path.join(checkpoint, filename)
     torch.save(state, filepath)
 
