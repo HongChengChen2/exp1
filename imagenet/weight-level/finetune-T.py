@@ -147,7 +147,12 @@ def main():
         model.classifier[6] = nn.Linear(num_ftrs, 102) #only train the last layer
 
     if args.gpu is not None:
-        model = model.cuda(args.gpu)
+        if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
+            model.features = torch.nn.DataParallel(model.features)
+            model.cuda(args.gpu)
+        else:
+            model = torch.nn.DataParallel(model).cuda(args.gpu)
+
     elif args.distributed:
         model.cuda()
         model = torch.nn.parallel.DistributedDataParallel(model)
