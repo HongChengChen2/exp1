@@ -137,6 +137,8 @@ def main():
         dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
                                 world_size=args.world_size)
 
+
+
     # create model
     if args.pretrained:
         print("=> using pre-trained model '{}'".format(args.arch))
@@ -147,17 +149,6 @@ def main():
         num_ftrs = model.classifier[6].in_features
         model.classifier[6] = nn.Linear(num_ftrs, 102)
 
-    if args.resume:
-        # Load checkpoint.
-        if os.path.isfile(args.resume):
-            print("=> loading checkpoint '{}'".format(args.resume))
-            checkpoint = torch.load(args.resume).get('state_dict')
-            #print(checkpoint.keys())  
-
-            model.load_state_dict(checkpoint)
-
-        else:
-            print("=> no checkpoint found at '{}'".format(args.resume))
 
     if args.gpu is not None:
         model = model.cuda(args.gpu)
@@ -170,6 +161,18 @@ def main():
             model.cuda()
         else:
             model = torch.nn.DataParallel(model).cuda()
+            
+    if args.resume:
+        # Load checkpoint.
+        if os.path.isfile(args.resume):
+            print("=> loading checkpoint '{}'".format(args.resume))
+            checkpoint = torch.load(args.resume).get('state_dict')
+            #print(checkpoint.keys())  
+
+            model.load_state_dict(checkpoint)
+
+        else:
+            print("=> no checkpoint found at '{}'".format(args.resume))
 
 
     train_data = MyDataset(txt=args.data+'dataset-trn.txt', transform=transform)
