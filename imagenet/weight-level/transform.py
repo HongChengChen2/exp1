@@ -210,6 +210,7 @@ def main():
         if epoch % args.print_freq == 0:
             validate(val_loader, model, criterion)
 
+
     model.train(False)
 
     print("--- final test -----")

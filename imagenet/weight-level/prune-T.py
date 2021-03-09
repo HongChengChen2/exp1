@@ -10,7 +10,7 @@ import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
-import torch.optim
+import torch.optim as optim
 import torch.utils.data
 import torch.utils.data.distributed
 import torchvision.transforms as transforms
@@ -141,13 +141,19 @@ def main():
     else:
         print("=> creating model '{}'".format(args.arch))
         model = models.__dict__[args.arch]()
+        num_ftrs = model.classifier[6].in_features
+        model.classifier[6] = nn.Linear(num_ftrs, 102)
 
     if args.resume:
         # Load checkpoint.
-        print('==> Resuming from checkpoint..')
-        assert os.path.isfile(args.resume), 'Error: no checkpoint directory found!'
-        checkpoint = torch.load(args.resume)
-        model.load_state_dict(checkpoint)
+        if os.path.isfile(args.resume):
+            print("=> loading checkpoint '{}'".format(args.resume))
+            checkpoint = torch.load(args.resume).get('state_dict')
+            #print(checkpoint.keys())  
+            model.load_state_dict(checkpoint)
+
+        else:
+            print("=> no checkpoint found at '{}'".format(args.resume))
 
     if args.gpu is not None:
         model = model.cuda(args.gpu)
@@ -173,7 +179,8 @@ def main():
 
     criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 
-    test_acc0 = validate(val_loader, model, criterion)
+    print("--------------before pruning  ---------------")
+    test_acc0 = validate(val_loader, model, criterion) 
     #############################################################################################################################
     total = 0
     for m in model.modules():
@@ -207,6 +214,8 @@ def main():
                 format(k, mask.numel(), int(torch.sum(mask))))
     print('Total conv params: {}, Pruned conv params: {}, Pruned ratio: {}'.format(total, pruned, pruned/total))
     ##############################################################################################################################
+    print("--------------After weight-pruning  ---------------")
+
     test_acc1 = validate(val_loader, model, criterion)
 
     save_checkpoint({
@@ -269,7 +278,8 @@ def validate(val_loader, model, criterion):
 
     return top1.avg
 
-def save_checkpoint(state, is_best, checkpoint, filename='pruned.pth.tar'):
+def save_checkpoint(state, is_best, checkpoint, filename=''):
+    filename = "pruned_vgg"+ str(int(args.percent*100)) +".pth.tar"
     filepath = os.path.join(checkpoint, filename)
     torch.save(state, filepath)
 
