@@ -153,13 +153,8 @@ def main():
             print("=> loading checkpoint '{}'".format(args.resume))
             checkpoint = torch.load(args.resume).get('state_dict')
             #print(checkpoint.keys())  
-            new_checkpoint = OrderedDict()
 
-            for k, v in checkpoint.items():
-                name = k.replace(".module", "") # removing ‘.moldule’ from key
-                new_checkpoint[name]=v
-
-            model.load_state_dict(new_checkpoint)
+            model.load_state_dict(checkpoint)
 
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
@@ -188,6 +183,7 @@ def main():
 
     criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 
+    model.cuda(args.gpu)
     print("--------------before pruning  ---------------")
     test_acc0 = validate(val_loader, model, criterion) 
     #############################################################################################################################
