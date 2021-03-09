@@ -220,14 +220,7 @@ def main():
             'best_acc': 0.,
         }, False, checkpoint=args.save)
 
-    with open(os.path.join(args.save, 'prune.txt'), 'w') as f:
-        f.write('Before pruning: Test Acc:  %.2f\n' % (test_acc0))
-        f.write('Total conv params: {}, Pruned conv params: {}, Pruned ratio: {}\n'.format(total, pruned, pruned/total))
-        f.write('After Pruning: Test Acc:  %.2f\n' % (test_acc1))
-
-        if zero_flag:
-            f.write("There exists a layer with 0 parameters left.")
-
+   
     return
 
 def validate(val_loader, model, criterion):
