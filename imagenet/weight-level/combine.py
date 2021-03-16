@@ -23,7 +23,8 @@ import torchvision.datasets as datasets
 import torchvision.models as models
 from torch.autograd import Variable
 from collections import OrderedDict
-
+from torch.utils.data import Dataset, DataLoader
+from PIL import Image
 
 #only used data to compute accuracy, not in deciding which to prune
 
