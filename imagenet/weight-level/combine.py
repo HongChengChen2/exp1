@@ -177,7 +177,7 @@ def main():
 
 
     criterion = nn.CrossEntropyLoss().cuda(args.gpu)    
-    test_acc = validate(test_loader, model_1, model_0, criterion)
+    test_acc = validate(val_loader, model_1, model_0, criterion)
    
 
     
