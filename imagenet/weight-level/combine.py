@@ -223,15 +223,15 @@ def validate(val_loader, model_1, model_0 , criterion):
 
             #print(output_2)
 
-            print("output_1:",output_1)
-            print("output_0:",output_0)
+            #print("output_1:",output_1)
+            #print("output_0:",output_0)
 
             loss = criterion(output_1, target)
 
             # measure accuracy and record loss
             prec1, prec5 = accuracy(output_1, target, topk=(1, 5))
-            print("prec1:",prec1)
-            print("prec5:",prec5)
+            #print("prec1:",prec1)
+            #print("prec5:",prec5)
 
             losses.update(loss.item(), input.size(0))
             top1.update(prec1[0], input.size(0))
@@ -263,11 +263,11 @@ def accuracy(output, target, topk=(1,)):
         #print("batch_size",batch_size)
         maxk = max(topk) # = 5
         _, pred = output.topk(maxk, 1, True, True) #sort and get top k and their index
-        #print("pred:",pred) #is index 5col xrow
+        print("pred:",pred) #is index 5col xrow
         #print("pred after:",pred)
 
         pred = pred.t() # a zhuanzhi transpose xcol 5row
-        #print("pred.t():",pred)
+        print("pred.t():",pred)
         #print("size:",pred[0][0].type()) #5,12
 
 
