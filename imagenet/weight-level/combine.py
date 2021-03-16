@@ -172,7 +172,7 @@ def main():
         model_1.load_state_dict(checkpoint1) #cat dog
 
 
-    val_dataset = MyDataset(txt=args.data+'dataset-val.txt', transform=transform)
+    val_dataset = MyDataset(txt=args.data+'dataset-val2.txt', transform=transform)
     val_loader = torch.utils.data.DataLoader(val_dataset , batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
 
