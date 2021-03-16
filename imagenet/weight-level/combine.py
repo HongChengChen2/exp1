@@ -207,11 +207,11 @@ def validate(val_loader, model_1, model_0 , criterion):
             # compute output,out put is a tensor
             output_1 = model_1(input)
             output_1= F.softmax(output_1, dim=1) # calculate as row
-            print("output_1:",output_1)
+            #print("output_1:",output_1)
  
             output_0 = model_0(input)
             output_0= F.softmax(output_0, dim=1)
-            print("output_0:",output_0)
+            #print("output_0:",output_0)
 
 
             #print(output_2)
@@ -223,12 +223,16 @@ def validate(val_loader, model_1, model_0 , criterion):
 
             #print(output_2)
 
+            print("output_1:",output_1)
             print("output_0:",output_0)
 
             loss = criterion(output_1, target)
 
             # measure accuracy and record loss
             prec1, prec5 = accuracy(output_1, target, topk=(1, 5))
+            print("prec1:",prec1)
+            print("prec5:",prec5)
+
             losses.update(loss.item(), input.size(0))
             top1.update(prec1[0], input.size(0))
             top5.update(prec5[0], input.size(0))
