@@ -137,7 +137,7 @@ def main():
         model_1.classifier[6] = nn.Linear(num_ftrs, 102) #only train the last layer
         print("=> loading pre-trained model '{}'".format(args.arch))
         model_0 = models.__dict__[args.arch](pretrained=True)
-        model_0.classifier[6] = nn.Linear(num_ftrs, 102) #only train the last layer
+        #model_0.classifier[6] = nn.Linear(num_ftrs, 102) #only train the last layer
        
 
     
