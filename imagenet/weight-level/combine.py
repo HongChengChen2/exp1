@@ -135,6 +135,11 @@ def main():
         model_1 = models.__dict__[args.arch]()
         num_ftrs = model_1.classifier[6].in_features
         model_1.classifier[6] = nn.Linear(num_ftrs, 102) #only train the last layer
+
+        model_2 = models.__dict__[args.arch]()
+        num_ftrs = model_2.classifier[6].in_features
+        model_2.classifier[6] = nn.Linear(num_ftrs, 102) #only train the last layer
+
         print("=> loading pre-trained model '{}'".format(args.arch))
         model_0 = models.__dict__[args.arch](pretrained=True)
         #model_0.classifier[6] = nn.Linear(num_ftrs, 102) #only train the last layer
@@ -144,18 +149,23 @@ def main():
 
     if args.gpu is not None:
         model_1 = model_1.cuda(args.gpu) #this way
+        model_2 = model_2.cuda(args.gpu) #this way
         model_0 = model_0.cuda(args.gpu) #this way
     elif args.distributed:
         model_1.cuda()
+        model_2.cuda()
         model_0.cuda()
         model_1 = torch.nn.parallel.DistributedDataParallel(model_1)
+        model_2 = torch.nn.parallel.DistributedDataParallel(model_2)
         model_0 = torch.nn.parallel.DistributedDataParallel(model_0)
 
     else:
         if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
             model_1.features = torch.nn.DataParallel(model_1.features)
+            model_2.features = torch.nn.DataParallel(model_2.features)
             model_0.features = torch.nn.DataParallel(model_0.features)
             model_1.cuda()
+            model_2.cuda()
             model_0.cuda()
 
         else:
@@ -163,28 +173,32 @@ def main():
     
     if args.resume:
         # Load checkpoint.
-        print('==> Resuming from checkpoint..')
+        print('==> Resuming from checkpoint ..')
 
-        assert os.path.isfile(args.resume), 'Error: no checkpoint1 directory found!'
+        assert os.path.isfile("/root/hcc/exp1/save/wl/prune/scratch_vgg9.pth.tar"), 'Error: no checkpoint1-scratch directory found!'
+        checkpoint1 = torch.load("/root/hcc/exp1/save/wl/prune/scratch_vgg9.pth.tar").get('state_dict')
 
-        checkpoint1 = torch.load(args.resume).get('state_dict')
+        model_1.load_state_dict(checkpoint1) #cat dog        print('==> Resuming from checkpoint ..')
 
-        model_1.load_state_dict(checkpoint1) #cat dog
+        assert os.path.isfile("/root/hcc/exp1/save/wl/prune/transformed_vgg.pth.tar"), 'Error: no checkpoint2-transform directory found!'
+        checkpoint2 = torch.load("/root/hcc/exp1/save/wl/prune/transformed_vgg.pth.tar").get('state_dict')
+
+        model_2.load_state_dict(checkpoint2) #cat dog
 
 
-    val_dataset = MyDataset(txt=args.data+'dataset-val2.txt', transform=transform)
+    val_dataset = MyDataset(txt=args.data+'dataset-val.txt', transform=transform)
     val_loader = torch.utils.data.DataLoader(val_dataset , batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
 
 
     criterion = nn.CrossEntropyLoss().cuda(args.gpu)    
-    test_acc = validate(val_loader, model_1, model_0, criterion)
+    test_acc = validate(val_loader, model_1,model_2, model_0, criterion)
    
 
     
     return
 
-def validate(val_loader, model_1, model_0 , criterion):
+def validate(val_loader, model_1,model_2, model_0 , criterion):
     # AverageMeter() : Computes and stores the average and current value
     batch_time = AverageMeter()
     losses = AverageMeter()
@@ -194,6 +208,7 @@ def validate(val_loader, model_1, model_0 , criterion):
 
     # switch to evaluate mode
     model_1.eval()
+    model_2.eval()
     model_0.eval()
 
     with torch.no_grad():
@@ -213,7 +228,8 @@ def validate(val_loader, model_1, model_0 , criterion):
             output_0= F.softmax(output_0, dim=1)
             #print("output_0:",output_0)
 
-
+            output_2 = model_2(input)
+            output_2= F.softmax(output_2, dim=1)
             #print(output_2)
 
             out_size = output_1.size()
@@ -231,9 +247,9 @@ def validate(val_loader, model_1, model_0 , criterion):
             # measure accuracy and record loss
             prec1, prec5 = accuracy(output_1, target, topk=(1, 5))
 
-            print("-------------ImageNet------------------")
+            #print("-------------ImageNet------------------")
             accuracy(output_0, target, topk=(1, 5))
-            print("-------------over------------------")
+            #print("-------------over------------------")
 
             #print("prec1:",prec1)
             #print("prec5:",prec5)
@@ -267,12 +283,13 @@ def accuracy(output, target, topk=(1,)):
         batch_size = target.size(0)
         #print("batch_size",batch_size)
         maxk = max(topk) # = 5
-        _, pred = output.topk(maxk, 1, True, True) #sort and get top k and their index
+        number1, pred = output.topk(maxk, 1, True, True) #sort and get top k and their index
         #print("pred:",pred) #is index 5col xrow
         #print("pred after:",pred)
+        print("_ number1 after:",number1)
 
         pred = pred.t() # a zhuanzhi transpose xcol 5row
-        print("pred.t():",pred)
+        #print("pred.t():",pred)
         #print("size:",pred[0][0].type()) #5,12
 
 
