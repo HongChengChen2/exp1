@@ -286,7 +286,7 @@ def accuracy(output, target, topk=(1,)):
         number1, pred = output.topk(maxk, 1, True, True) #sort and get top k and their index
         #print("pred:",pred) #is index 5col xrow
         #print("pred after:",pred)
-        print("_ number1 after:",number1)
+        print("_ number1 after:",number1.t())
 
         pred = pred.t() # a zhuanzhi transpose xcol 5row
         #print("pred.t():",pred)
