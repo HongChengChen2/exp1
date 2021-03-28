@@ -245,7 +245,7 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
             loss = criterion(output_2, target)
 
             # measure accuracy and record loss
-            prec1, prec5 = accuracy(output_2, target, topk=(1, 2))
+            prec1, prec5 = accuracy(output_1, output_2, target, topk=(1, 2))
 
             #print("-------------ImageNet------------------")
             #accuracy(output_0, target, topk=(1, 5))
@@ -276,20 +276,29 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
 
     return top1.avg
 
-def accuracy(output, target, topk=(1,)):
+def accuracy(output_1,output_2, target, topk=(1,)):
     """Computes the precision@k for the specified values of k"""
     #view() means resize() -1 means 'it depends'
     with torch.no_grad():
         batch_size = target.size(0)
         #print("batch_size",batch_size)
         maxk = max(topk) # = 5
-        number1, pred = output.topk(maxk, 1, True, True) #sort and get top k and their index
-        #print("pred:",pred) #is index 5col xrow
+        number1, pred1 = output_1.topk(maxk, 1, True, True) #sort and get top k and their index
+        pred = pred1 
+        number2, pred2 = output_2.topk(maxk, 1, True, True) #sort and get top k and their index
+        print("pred:",pred) #is index 5col xrow
         #print("pred after:",pred)
         print("_ number1 after:",number1.t())
 
+        for a in (0,number1.shape[1]):
+            gap = number1[0][a] - number1[1][a]
+            if gap <0.5:
+                pred[0][a] = pred2[0][a]
+                pass
+            pass
+
         pred = pred.t() # a zhuanzhi transpose xcol 5row
-        #print("pred.t():",pred)
+        print("pred_combine.t():",pred)
         #print("size:",pred[0][0].type()) #5,12
 
 
