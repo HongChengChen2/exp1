@@ -245,7 +245,7 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
             loss = criterion(output_2, target)
 
             # measure accuracy and record loss
-            prec1, prec5 = accuracy(output_0, output_1, target, topk=(1, 2))
+            prec1, prec5 = accuracy(output_1, output_2, target, topk=(1, 2))
 
             #print("-------------ImageNet------------------")
             #accuracy(output_0, target, topk=(1, 5))
@@ -288,14 +288,14 @@ def accuracy(output_1,output_2, target, topk=(1,)):
         number2, pred2 = output_2.topk(maxk, 1, True, True) #sort and get top k and their index
         print("pred:",pred.t()) #is index 5col xrow
         #print("pred after:",pred)
-        #print("_ number1 after:",number1.t())
+        print("_ number1 after:",number1.t())
 
         #print("number1[0][1]:",number1[0][1])
         #print("pred[0][1]:",pred[0][1])
         for a in (0,number1.shape[0]-1):
             gap = number1[a][0] - number1[a][1]
             print("gap:",gap)
-            if gap <0.5:
+            if gap < 0.6:
                 pred[a][0] = pred2[a][0]
                 pred[a][1] = pred2[a][1]
                 
