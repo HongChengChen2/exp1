@@ -242,10 +242,10 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
             #print("output_1:",output_1)
             #print("output_0:",output_0)
 
-            loss = criterion(output_1, target)
+            loss = criterion(output_2, target)
 
             # measure accuracy and record loss
-            prec1, prec5 = accuracy(output_1, target, topk=(1, 2))
+            prec1, prec5 = accuracy(output_2, target, topk=(1, 2))
 
             #print("-------------ImageNet------------------")
             #accuracy(output_0, target, topk=(1, 5))
