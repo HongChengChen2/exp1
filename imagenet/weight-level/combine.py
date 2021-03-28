@@ -293,9 +293,10 @@ def accuracy(output_1,output_2, target, topk=(1,)):
         for a in (0,number1.shape[1]):
             gap = number1[0][a] - number1[1][a]
             if gap <0.5:
-                pred[0][a] = pred2[0][a]
-                pass
-            pass
+                pred[a][0] = pred2[a][0]
+                pred[a][1] = pred2[a][1]
+                
+            
 
         pred = pred.t() # a zhuanzhi transpose xcol 5row
         print("pred_combine.t():",pred)
