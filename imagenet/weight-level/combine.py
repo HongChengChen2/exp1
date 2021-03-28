@@ -294,7 +294,7 @@ def accuracy(output, target, topk=(1,)):
 
 
         correct = pred.eq(target.view(1, -1).expand_as(pred)) #expend target to pred
-        #print("correct:",correct)
+        print("correct:",correct)
 
         res = []
         for k in topk: #loop twice 1&5 
