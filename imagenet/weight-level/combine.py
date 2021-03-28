@@ -290,6 +290,8 @@ def accuracy(output_1,output_2, target, topk=(1,)):
         #print("pred after:",pred)
         print("_ number1 after:",number1.t())
 
+        print("number1.shape[0]:",number1.shape[0])
+        print("number1.shape[1]:",number1.shape[1])
         for a in (0,number1.shape[1]):
             gap = number1[0][a] - number1[1][a]
             if gap <0.5:
