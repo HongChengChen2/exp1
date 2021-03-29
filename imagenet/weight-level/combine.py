@@ -74,6 +74,7 @@ parser.add_argument('--gpu', default=None, type=int,
                     help='GPU id to use.')
 
 best_prec1 = 0
+total_re = 0
 mean = [ 0.485, 0.456, 0.406 ]
 std = [ 0.229, 0.224, 0.225 ]
 
@@ -275,6 +276,7 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
 
         print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
               .format(top1=top1, top5=top5))
+        print("total_re:",total_re)
 
     return top1.avg
 
@@ -303,6 +305,7 @@ def accuracy(output_1,output_2, target, topk=(1,)):
             #print("gap:",gap)
             #print("a:",a)
             if gap < args.lineh:
+                total_re = total_re +1
                 pred[a][0] = pred2[a][0]
                 pred[a][1] = pred2[a][1]
                 
