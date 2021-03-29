@@ -115,7 +115,7 @@ class MyDataset(torch.utils.data.Dataset):
 
 #@torchsnooper.snoop()
 def main():
-    global args, best_prec1
+    global args, best_prec1, total_re
     args = parser.parse_args()
 
     if args.gpu is not None:
