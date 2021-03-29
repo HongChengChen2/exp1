@@ -52,6 +52,8 @@ parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
                     metavar='LR', help='initial learning rate')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
+parser.add_argument('--lineh', default=0.5, type=float, metavar='M',
+                    help='lineh')
 parser.add_argument('--weight-decay', '--wd', default=1e-4, type=float,
                     metavar='W', help='weight decay (default: 1e-4)')
 parser.add_argument('--print-freq', '-p', default=1, type=int,
@@ -300,7 +302,7 @@ def accuracy(output_1,output_2, target, topk=(1,)):
             gap = gap_0.item()
             print("gap:",gap)
             print("a:",a)
-            if gap < 0.6:
+            if gap < args.lineh:
                 pred[a][0] = pred2[a][0]
                 pred[a][1] = pred2[a][1]
                 
