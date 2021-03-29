@@ -188,7 +188,7 @@ def main():
         model_2.load_state_dict(checkpoint2) #cat dog
 
 
-    val_dataset = MyDataset(txt=args.data+'dataset-val2.txt', transform=transform)
+    val_dataset = MyDataset(txt=args.data+'dataset-val.txt', transform=transform)
     val_loader = torch.utils.data.DataLoader(val_dataset , batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
 
@@ -219,7 +219,7 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
             if args.gpu is not None:
                 input = input.cuda(args.gpu, non_blocking=True)
             target = target.cuda(args.gpu, non_blocking=True) # 0*100 + 1*100 +2*100
-            print("target:",target)
+            #print("target:",target)
 
             # compute output,out put is a tensor
             output_1 = model_1(input)
@@ -309,7 +309,7 @@ def accuracy(output_1,output_2, target, topk=(1,)):
             
 
         pred = pred.t() # a zhuanzhi transpose xcol 5row
-        print("pred_combine.t():",pred)
+        #print("pred_combine.t():",pred)
         #print("size:",pred[0][0].type()) #5,12
 
 
