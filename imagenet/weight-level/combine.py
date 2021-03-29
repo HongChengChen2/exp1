@@ -286,7 +286,8 @@ def accuracy(output_1,output_2, target, topk=(1,)):
         number1, pred1 = output_1.topk(maxk, 1, True, True) #sort and get top k and their index
         pred = pred1 
         number2, pred2 = output_2.topk(maxk, 1, True, True) #sort and get top k and their index
-        print("pred:",pred.t()) #is index 5col xrow
+        print("pred1:",pred1.t()) #is index 5col xrow
+        print("pred2:",pred2.t()) #is index 5col xrow
         #print("pred after:",pred)
         print("_ number1 after:",number1.t())
 
