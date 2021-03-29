@@ -283,6 +283,7 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
 def accuracy(output_1,output_2, target, topk=(1,)):
     """Computes the precision@k for the specified values of k"""
     #view() means resize() -1 means 'it depends'
+    global total_re
     with torch.no_grad():
         batch_size = target.size(0)
         #print("batch_size",batch_size)
