@@ -302,7 +302,7 @@ def accuracy(output_1,output_2, target, topk=(1,)):
         #print("number1.shape[1]",number1.shape[1])
         for a in range(0,number1.shape[0]):
             #gap_0 = number1[a][0] - number1[a][1]
-            gap = random.random(0,1)
+            gap = random.random()
             #gap = number1[a][0]
             #gap = gap_0.item()
             #print("gap:",gap)
