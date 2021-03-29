@@ -293,6 +293,8 @@ def accuracy(output_1,output_2, target, topk=(1,)):
 
         #print("number1[0][1]:",number1[0][1])
         #print("pred[0][1]:",pred[0][1])
+        print("number1.shape[0]",number1.shape[0])
+        print("number1.shape[1]",number1.shape[1])
         for a in (0,number1.shape[0]-1):
             gap = number1[a][0] - number1[a][1]
             print("gap:",gap)
