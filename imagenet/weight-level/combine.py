@@ -284,7 +284,7 @@ def accuracy(output_1,output_2, target, topk=(1,)):
         #print("batch_size",batch_size)
         maxk = max(topk) # = 5
         number1, pred1 = output_1.topk(maxk, 1, True, True) #sort and get top k and their index
-        pred = pred1 
+        pred = pred1[:]
         number2, pred2 = output_2.topk(maxk, 1, True, True) #sort and get top k and their index
         print("pred1:",pred1.t()) #is index 5col xrow
         print("pred2:",pred2.t()) #is index 5col xrow
