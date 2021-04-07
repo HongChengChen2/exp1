@@ -26,6 +26,8 @@ from collections import OrderedDict
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 
+from compute_flops import count_model_param_flops
+
 #only used data to compute accuracy, not in deciding which to prune
 
 model_names = sorted(name for name in models.__dict__
@@ -148,8 +150,6 @@ def main():
         #model_0.classifier[6] = nn.Linear(num_ftrs, 102) #only train the last layer
        
 
-    
-
     if args.gpu is not None:
         model_1 = model_1.cuda(args.gpu) #this way
         model_2 = model_2.cuda(args.gpu) #this way
@@ -189,6 +189,15 @@ def main():
         model_2.load_state_dict(checkpoint2) #cat dog
 
 
+    ######################################################################################################
+    flops_model1 = count_model_param_flops(model_1)
+    flops_model2 = count_model_param_flops(model_2)
+    flops_model0 = count_model_param_flops(model_0)
+    print("model_1 flops_small %d"%flops_model1)
+    print("model_2 flops_small %d"%flops_model2)
+    print("model_0 flops_small %d"%flops_model0)
+    ######################################################################################################
+    
     val_dataset = MyDataset(txt=args.data+'dataset-val.txt', transform=transform)
     val_loader = torch.utils.data.DataLoader(val_dataset , batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
