@@ -236,12 +236,12 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
             output_1= F.softmax(output_1, dim=1) # calculate as row
             #print("output_1:",output_1)
  
-            output_0 = model_0(input)
-            output_0= F.softmax(output_0, dim=1)
+            #output_0 = model_0(input)
+            #output_0= F.softmax(output_0, dim=1)
             #print("output_0:",output_0)
 
-            output_2 = model_2(input)
-            output_2= F.softmax(output_2, dim=1)
+            #output_2 = model_2(input)
+            #output_2= F.softmax(output_2, dim=1)
             #print(output_2)
 
             out_size = output_1.size()
@@ -254,10 +254,11 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
             #print("output_1:",output_1)
             #print("output_0:",output_0)
 
-            loss = criterion(output_2, target)
+            loss = criterion(output_1, target)
 
             # measure accuracy and record loss
-            prec1, prec5 = accuracy(output_1, output_2, target, topk=(1, 2))
+            prec1, prec5 = accuracy(output_1, target, topk=(1, 2))
+            #prec1, prec5 = accuracy(output_1, output_2, target, topk=(1, 2))
 
             #print("-------------ImageNet------------------")
             #accuracy(output_0, target, topk=(1, 5))
@@ -289,7 +290,7 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
 
     return top1.avg
 
-def accuracy(output_1,output_2, target, topk=(1,)):
+def accuracy(output_1, target, topk=(1,)):
     """Computes the precision@k for the specified values of k"""
     #view() means resize() -1 means 'it depends'
     global total_re
@@ -299,7 +300,7 @@ def accuracy(output_1,output_2, target, topk=(1,)):
         maxk = max(topk) # = 5
         number1, pred1 = output_1.topk(maxk, 1, True, True) #sort and get top k and their index
         pred = pred1[:]
-        number2, pred2 = output_2.topk(maxk, 1, True, True) #sort and get top k and their index
+        #number2, pred2 = output_2.topk(maxk, 1, True, True) #sort and get top k and their index
         #print("pred1:",pred1.t()) #is index 5col xrow
         #print("pred2:",pred2.t()) #is index 5col xrow
         #print("pred after:",pred)
@@ -309,6 +310,7 @@ def accuracy(output_1,output_2, target, topk=(1,)):
         #print("pred[0][1]:",pred[0][1])
         #print("number1.shape[0]",number1.shape[0])
         #print("number1.shape[1]",number1.shape[1])
+        '''
         for a in range(0,number1.shape[0]):
             #gap_0 = number1[a][0] - number1[a][1]
             gap = random.random()
@@ -321,6 +323,7 @@ def accuracy(output_1,output_2, target, topk=(1,)):
                 pred[a][0] = pred2[a][0]
                 pred[a][1] = pred2[a][1]
                 
+         '''
             
 
         pred = pred.t() # a zhuanzhi transpose xcol 5row
