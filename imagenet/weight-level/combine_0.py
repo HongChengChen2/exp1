@@ -164,12 +164,13 @@ def main():
         # Load checkpoint.
         print('==> Resuming from checkpoint ..')
 
-        assert os.path.isfile("/root/hcc/exp1/save/wl/prune/scratch_vgg9.pth.tar"), 'Error: no checkpoint1-scratch directory found!'
+        #assert os.path.isfile("/root/hcc/exp1/save/wl/prune/scratch_vgg9.pth.tar"), 'Error: no checkpoint1-scratch directory found!'
+        assert os.path.isfile("/root/hcc/exp1/save/wl/prune/transformed_vgg.pth.tar"), 'Error: no checkpoint2-transform directory found!'
+
         checkpoint1 = torch.load("/root/hcc/exp1/save/wl/prune/scratch_vgg9.pth.tar").get('state_dict')
 
         model_1.load_state_dict(checkpoint1) #cat dog        print('==> Resuming from checkpoint ..')
 
-        #assert os.path.isfile("/root/hcc/exp1/save/wl/prune/transformed_vgg.pth.tar"), 'Error: no checkpoint2-transform directory found!'
 
 
     ######################################################################################################
