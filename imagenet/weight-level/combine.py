@@ -244,7 +244,7 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
             #output_2= F.softmax(output_2, dim=1)
             #print(output_2)
 
-            out_size = output_1.size()
+            out_size = output_0.size()
             row = out_size[0] 
             zero_tensor = torch.FloatTensor(row,1).zero_().cuda()
 
@@ -254,10 +254,10 @@ def validate(val_loader, model_1,model_2, model_0 , criterion):
             #print("output_1:",output_1)
             #print("output_0:",output_0)
 
-            loss = criterion(output_1, target)
+            loss = criterion(output_0, target)
 
             # measure accuracy and record loss
-            prec1, prec5 = accuracy(output_1, target, topk=(1, 2))
+            prec1, prec5 = accuracy(output_0, target, topk=(1, 2))
             #prec1, prec5 = accuracy(output_1, output_2, target, topk=(1, 2))
 
             #print("-------------ImageNet------------------")
